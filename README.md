@@ -31,14 +31,35 @@ Pull requests are welcome.
 
 ## Modules and PowerShell
 
-Security & compliance, Exchange Online (EXO), and Exchange Online Protection (EOP) and others
-have remote PowerShells.
+Security & Compliance, Exchange Online (EXO), and Exchange Online Protection (EOP) and others
+have PowerShell modules.
 
-Install Graph device management PowerShell cmdlets.
+Install PowerShell modules.
 
 ```powershell
 Install-Module -Name Microsoft.Graph.DeviceManagement
+Install-Module -Name AzureADPreview
+Install-Module -Name ExchangeOnlineManagement
+Install-Module -Name Microsoft.Online.SharePoint.PowerShell
+Install-Module -Name MicrosoftTeams
 ```
+
+Import module and connect to Entra ID tenant to access cmdlets.
+
+```powershell
+Import-Module AzureADPreview
+Connect-AzureAD
+```
+
+Connect to Security & Compliance PowerShell using `Connect-IPPSSession` from the
+`ExchangeOnlineManagement` module.
+
+```powershell
+Connect-IPPSSession
+```
+
+The modules all have their respective connection cmdlets, `Connect-MicrosoftTeams`,
+`Connect-SPOService`, and `Connect-ExchangeOnline`.
 
 ## Defender for Endpoint
 
