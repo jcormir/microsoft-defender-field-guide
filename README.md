@@ -17,6 +17,7 @@ Pull requests are welcome.
 ## Table of Contents
 
 - [Microsoft Defender Field Guide](#microsoft-defender-field-guide)
+  - [Modules and PowerShell](#modules-and-powershell)
   - [Defender for Endpoint](#defender-for-endpoint)
     - [Deploy with Intune](#deploy-with-intune)
     - [Deploy with Configuration Manager](#deploy-with-configuration-manager)
@@ -27,6 +28,17 @@ Pull requests are welcome.
   - [Defender for Identity](#defender-for-identity)
   - [Defender for Vulnerability Management](#defender-for-vulnerability-management)
   - [Microsoft 365 Defender](#microsoft-365-defender)
+
+## Modules and PowerShell
+
+Security & compliance, Exchange Online (EXO), and Exchange Online Protection (EOP) and others
+have remote PowerShells.
+
+Install Graph device management PowerShell cmdlets.
+
+```powershell
+Install-Module -Name Microsoft.Graph.DeviceManagement
+```
 
 ## Defender for Endpoint
 
@@ -46,7 +58,36 @@ Create a new Group to target Users or Devices with an Endpoint detection and res
 policy that turns on MDE.
 
 ```powershell
-New-AzureADGroup -DisplayName "New MDE Group" -MailEnabled $false -SecurityEnabled $true -MailNickName "NotSet"
+$group = New-AzureADMSGroup -DisplayName "New MDE Group" -MailEnabled $false -SecurityEnabled $true -MailNickName "NotSet"
+```
+
+Create an EDR policy device configuration.
+
+```powershell
+$params = @{
+  "@odata.type" = "#microsoft.graph.windowsDefenderAdvancedThreatProtectionConfiguration"
+  description = "New EDR Policy"
+  displayName = "New EDR Policy"
+  version = 7
+  allowSampleSharing = $true
+  enableExpeditedTelemetryReporting = $true
+}
+
+$deviceConfiguration = New-MgDeviceManagementDeviceConfiguration -BodyParameter $params
+```
+
+Create device configuration assignment to security group.
+
+```powershell
+$params = @{
+  "@odata.type" = "#microsoft.graph.deviceConfigurationAssignment"
+  target = @{
+    "@odata.type" = "microsoft.graph.configurationManagerCollectionAssignmentTarget"
+    collectionId = $group.Id
+  }
+}
+
+New-MgDeviceManagementDeviceConfigurationAssignment -DeviceConfigurationId $deviceConfiguration.Id -BodyParameter $params
 ```
 
 ### Deploy with Configuration Manager
@@ -59,9 +100,13 @@ MDE intergrates with Microsoft Intune, Defender for Office 365, and Defender for
 
 ## Defender for Office 365
 
-Safe links, safe attachments, and safe documents
+Protect Office 365 users With message safety features like Anti-Spam, Anti-Phishing, Safe Links,
+Safe Attachments, and Safe Documents.
 
 ## Defender for Cloud
+
+An umbra of Microsoft products and services that protect cloud assets. Defender for Key Vault,
+Defender for Servers, Defender for DNS, and others.
 
 ## Defender for Cloud Apps
 
